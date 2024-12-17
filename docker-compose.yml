@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=root:haywin$8846@tcp(mariadb:3306)/form1?charset=utf8mb4&parseTime=True&loc=Local
+    depends_on:
+      - mariadb
+  
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mysql_employeemanagement
+    environment:
+      MYSQL_ROOT_PASSWORD: haywin$8846
+      MYSQL_DATABASE: form1
+      MYSQL_USER: root
+      MYSQL_PASSWORD: haywin$8846
+    ports:
+      - "3307:3306"  
+    networks:
+      - backend_net  
+  
+networks:
+  backend_net:
+    driver: bridge
