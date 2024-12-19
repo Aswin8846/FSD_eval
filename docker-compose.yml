@@ -1,14 +1,12 @@
-version: "3"
-
 services:
   db:
     image: mysql:8.0
     container_name: mysql_container
     environment:
-      MYSQL_ROOT_PASSWORD: haywin$8846      # Set root password
-      MYSQL_DATABASE: form1                 # Database name
-      MYSQL_USER: root                      # Existing user (root)
-      MYSQL_PASSWORD: haywin$8846           # Password for root
+      MYSQL_ROOT_PASSWORD: haywin$8846
+      MYSQL_DATABASE: form1
+      MYSQL_USER: root
+      MYSQL_PASSWORD: haywin$8846
     ports:
       - "3306:3306"
     networks:
@@ -32,7 +30,7 @@ services:
       - form_eval_net
     command: >
       sh -c "
-      /usr/local/bin/wait-for-it.sh db:3306 -- 
+      /usr/local/bin/wait-for-it.sh db:3306 --timeout=60 --
       ./main
       "
 
@@ -48,6 +46,7 @@ services:
 
 networks:
   form_eval_net:
+    external: true
 
 volumes:
   mysql_data:
