@@ -1,21 +1,23 @@
-FROM node:14 AS build
+# Use an official Node.js 16 image as the base
+FROM node:16-alpine
 
+# Set the working directory to /app
 WORKDIR /app
 
-COPY package*.json ./
+# Copy the package.json and package-lock.json files
+COPY package*.json ./ 
+
+# Install dependencies
 RUN npm install
 
+# Copy the app files
 COPY . .
 
+# Build the app
 RUN npm run build
 
-FROM nginx:alpine
-
-COPY --from=build /app/build /usr/share/nginx/html
-
+# Expose port 3000
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
-
-
-
+# Run the app
+CMD ["npm", "start"]

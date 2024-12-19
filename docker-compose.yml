@@ -1,33 +1,53 @@
-version: '3.8'
+version: "3"
 
 services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: haywin$8846      # Set root password
+      MYSQL_DATABASE: form1                 # Database name
+      MYSQL_USER: root                      # Existing user (root)
+      MYSQL_PASSWORD: haywin$8846           # Password for root
+    ports:
+      - "3306:3306"
+    networks:
+      - form_eval_net
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
-    environment:
-      - DATABASE_URL=root:haywin$8846@tcp(mariadb:3306)/form1?charset=utf8mb4&parseTime=True&loc=Local
+      - "5000:5000"
     depends_on:
-      - mariadb
-  
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"
-
-  mariadb:
-    image: mariadb:latest
-    container_name: mysql_employeemanagement
+      - db
     environment:
-      MYSQL_ROOT_PASSWORD: haywin$8846
-      MYSQL_DATABASE: form1
-      MYSQL_USER: root
-      MYSQL_PASSWORD: haywin$8846
-    ports:
-      - "3307:3306"  
+      DB_USER: root
+      DB_PASSWORD: haywin$8846
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: form1
     networks:
-      - backend_net  
-  
+      - form_eval_net
+    command: >
+      sh -c "
+      /usr/local/bin/wait-for-it.sh db:3306 -- 
+      ./main
+      "
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - form_eval_net
+
 networks:
-  backend_net:
-    driver: bridge
+  form_eval_net:
+
+volumes:
+  mysql_data:
